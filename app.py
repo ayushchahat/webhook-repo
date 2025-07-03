@@ -5,9 +5,8 @@ import os
 
 app = Flask(__name__)
 
-# ✅ Replace with environment variable if deploying
+# ✅ MongoDB connection string (consider using os.getenv for production)
 client = MongoClient("mongodb+srv://ayush110903kumar:88NfaDi2WSDljsm1@cluster0.wsofxhq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-
 db = client["webhook_db"]
 collection = db["events"]
 
@@ -19,26 +18,31 @@ def webhook():
     if not data:
         return jsonify({"error": "Invalid payload"}), 400
 
+    # Initialize schema with safe defaults
     event = {
+        "request_id": "N/A",
         "author": data.get("sender", {}).get("login", "unknown"),
+        "action": "N/A",
+        "from_branch": "-",
+        "to_branch": "-",
         "timestamp": datetime.utcnow().strftime("%d %B %Y - %I:%M %p UTC")
     }
 
-    # Handle push event
+    # ✅ Handle push events
     if event_type == "push":
         event["action"] = "PUSH"
         event["request_id"] = data.get("head_commit", {}).get("id", "N/A")
-        event["from_branch"] = data["ref"].split("/")[-1]
-        event["to_branch"] = "main"  # assuming push is to main
+        event["from_branch"] = data.get("ref", "").split("/")[-1]
+        event["to_branch"] = "main"  # assumption
 
-    # Handle pull request opened or merged
+    # ✅ Handle pull request events
     elif event_type == "pull_request":
-        pr = data["pull_request"]
-        action = data.get("action")
+        pr = data.get("pull_request", {})
+        action = data.get("action", "")
 
         event["request_id"] = str(pr.get("id", "N/A"))
-        event["from_branch"] = pr["head"]["ref"]
-        event["to_branch"] = pr["base"]["ref"]
+        event["from_branch"] = pr.get("head", {}).get("ref", "-")
+        event["to_branch"] = pr.get("base", {}).get("ref", "-")
 
         if action == "opened":
             event["action"] = "PULL_REQUEST"
@@ -46,6 +50,7 @@ def webhook():
             event["action"] = "MERGE"
         else:
             return jsonify({"message": "PR event ignored"}), 200
+
     else:
         return jsonify({"message": f"{event_type} not handled"}), 200
 
