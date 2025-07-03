@@ -102,9 +102,11 @@
           const div = document.createElement("div");
           div.className = "event";
           div.innerHTML = `
-            <div><strong>Type:</strong> ${event.event_type}</div>
+            <div><strong>Action:</strong> ${event.action}</div>
             <div><strong>Author:</strong> ${event.author}</div>
-            <div><strong>Message:</strong> ${event.message}</div>
+            <div><strong>Request ID:</strong> ${event.request_id}</div>
+            <div><strong>From Branch:</strong> ${event.from_branch || '-'}</div>
+            <div><strong>To Branch:</strong> ${event.to_branch || '-'}</div>
             <div class="timestamp"><strong>Time:</strong> ${event.timestamp}</div>
           `;
           container.appendChild(div);
