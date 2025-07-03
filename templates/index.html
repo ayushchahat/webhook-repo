@@ -102,12 +102,12 @@
           const div = document.createElement("div");
           div.className = "event";
           div.innerHTML = `
-            <div><strong>Action:</strong> ${event.action}</div>
-            <div><strong>Author:</strong> ${event.author}</div>
-            <div><strong>Request ID:</strong> ${event.request_id}</div>
+            <div><strong>Action:</strong> ${event.action || 'N/A'}</div>
+            <div><strong>Author:</strong> ${event.author || 'N/A'}</div>
+            <div><strong>Request ID:</strong> ${event.request_id || 'N/A'}</div>
             <div><strong>From Branch:</strong> ${event.from_branch || '-'}</div>
             <div><strong>To Branch:</strong> ${event.to_branch || '-'}</div>
-            <div class="timestamp"><strong>Time:</strong> ${event.timestamp}</div>
+            <div class="timestamp"><strong>Time:</strong> ${event.timestamp || '-'}</div>
           `;
           container.appendChild(div);
         });
@@ -117,7 +117,7 @@
     }
 
     fetchEvents(); // initial load
-    setInterval(fetchEvents, 15000); // refresh every 15 sec
+    setInterval(fetchEvents, 15000); // refresh every 15 seconds
   </script>
 </body>
 </html>
