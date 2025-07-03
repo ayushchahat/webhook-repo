@@ -5,7 +5,7 @@ import os
 
 app = Flask(__name__)
 
-# ✅ MongoDB connection string (consider using os.getenv for production)
+# ✅ MongoDB connection string
 client = MongoClient("mongodb+srv://ayush110903kumar:88NfaDi2WSDljsm1@cluster0.wsofxhq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 db = client["webhook_db"]
 collection = db["events"]
@@ -18,24 +18,27 @@ def webhook():
     if not data:
         return jsonify({"error": "Invalid payload"}), 400
 
-    # Initialize schema with safe defaults
+    # Format the UTC timestamp now
+    timestamp_str = datetime.utcnow().strftime("%d %B %Y - %I:%M %p UTC")
+
+    # Schema template
     event = {
         "request_id": "N/A",
         "author": data.get("sender", {}).get("login", "unknown"),
         "action": "N/A",
         "from_branch": "-",
         "to_branch": "-",
-        "timestamp": datetime.utcnow().strftime("%d %B %Y - %I:%M %p UTC")
+        "timestamp": timestamp_str
     }
 
-    # ✅ Handle push events
+    # ✅ PUSH event
     if event_type == "push":
         event["action"] = "PUSH"
         event["request_id"] = data.get("head_commit", {}).get("id", "N/A")
         event["from_branch"] = data.get("ref", "").split("/")[-1]
-        event["to_branch"] = "main"  # assumption
+        event["to_branch"] = "main"
 
-    # ✅ Handle pull request events
+    # ✅ PULL REQUEST or MERGE
     elif event_type == "pull_request":
         pr = data.get("pull_request", {})
         action = data.get("action", "")
@@ -46,8 +49,11 @@ def webhook():
 
         if action == "opened":
             event["action"] = "PULL_REQUEST"
+
         elif action == "closed" and pr.get("merged"):
             event["action"] = "MERGE"
+            event["message"] = f'{event["author"]} merged branch "{event["from_branch"]}" to "{event["to_branch"]}" on {timestamp_str}'
+
         else:
             return jsonify({"message": "PR event ignored"}), 200
 
