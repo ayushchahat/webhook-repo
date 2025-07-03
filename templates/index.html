@@ -4,32 +4,91 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>GitHub Webhook Events</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: Arial;
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafb;
+      color: #1f2937;
       padding: 20px;
-      background-color: #f4f4f4;
     }
-    h1 {
+
+    header {
+      position: sticky;
+      top: 0;
+      background: linear-gradient(135deg, #007acc, #00c6ff);
+      padding: 20px;
       text-align: center;
+      color: white;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    #events {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+
     .event {
       background: white;
-      padding: 15px;
-      margin: 10px auto;
+      padding: 20px;
+      border-radius: 10px;
       border-left: 5px solid #007acc;
-      max-width: 600px;
-      box-shadow: 0 0 5px #ccc;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transition: transform 0.2s ease;
     }
+
+    .event:hover {
+      transform: translateY(-4px);
+    }
+
+    .event strong {
+      color: #111827;
+    }
+
     .timestamp {
-      color: gray;
-      font-size: 12px;
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
+      header h1 {
+        font-size: 1.5rem;
+      }
+
+      .event {
+        padding: 15px;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>GitHub Webhook Events</h1>
-  <div id="events"></div>
+  <header>
+    <h1>🚀 GitHub Webhook Event Dashboard</h1>
+  </header>
+
+  <div id="events">
+    <!-- Webhook events will appear here -->
+  </div>
 
   <script>
     async function fetchEvents() {
