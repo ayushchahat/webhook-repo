@@ -101,8 +101,14 @@
         data.forEach(event => {
           const div = document.createElement("div");
           div.className = "event";
+
+          const isMerge = event.action === "MERGE";
+          const messageHTML = isMerge && event.message
+            ? `<div><strong>Action:</strong> ${event.message}</div>`
+            : `<div><strong>Action:</strong> ${event.action || 'N/A'}</div>`;
+
           div.innerHTML = `
-            <div><strong>Action:</strong> ${event.action || 'N/A'}</div>
+            ${messageHTML}
             <div><strong>Author:</strong> ${event.author || 'N/A'}</div>
             <div><strong>Request ID:</strong> ${event.request_id || 'N/A'}</div>
             <div><strong>From Branch:</strong> ${event.from_branch || '-'}</div>
