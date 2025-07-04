@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 
 # ✅ MongoDB connection string
-client = MongoClient("mongodb+srv://ayush110903kumar:88NfaDi2WSDljsm1@cluster0.wsofxhq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+client = MongoClient("mongodb+srv://ayush110903kumar:88NfaDi2WSDljsm1@cluster0.wsofxhq.mongodb.net/?retryWrites=true&w=majority&tls=true")
 db = client["webhook_db"]
 collection = db["events"]
 
